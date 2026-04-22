@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useInfiniteHomeListing } from "./hooks/useInfiniteHomeListing";
 
 export default function Home() {
-  const [perPage, setPerPage] = useState<number>(2);
-  const [actionPage, setActionPage] = useState<number>(2);
+  const [perPage, setPerPage] = useState<number>(10);
+  const [actionPage, setActionPage] = useState<number>(10);
   const {
     data,
     isLoading,
