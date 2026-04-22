@@ -4,12 +4,12 @@ import type { InfiniteData } from '@tanstack/react-query'
 import type { HomeListingResponse } from '../api/homelisting/types'
 
 async function fetchHomeListing({ pageParam, perPageParam }: { pageParam: number, perPageParam?: number }): Promise<HomeListingResponse> {
-  const res = await fetch(`/api/homelisting?page=${pageParam}&per_page=${perPageParam}`)
+  const res = await fetch(`/api/homelisting?page=${pageParam}&per_page=${perPageParam ?? 10}`)
   if (!res.ok) throw new Error('Failed to fetch home listings')
   return res.json()
 }
 
-export function useInfiniteHomeListing(perPage: number) {
+export function useInfiniteHomeListing(perPage: number = 10) {
   return useInfiniteQuery<HomeListingResponse, Error, InfiniteData<HomeListingResponse>, ['homelisting', number], number>({
     queryKey: ['homelisting', perPage],
     queryFn: ({ pageParam }) => fetchHomeListing({ pageParam, perPageParam: perPage }),

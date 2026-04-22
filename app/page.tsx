@@ -4,11 +4,18 @@ import { useState } from "react";
 import { useInfiniteHomeListing } from "./hooks/useInfiniteHomeListing";
 
 export default function Home() {
-  const [perPage, setPerPage] = useState(5);
-  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteHomeListing(perPage);
+  const [perPage, setPerPage] = useState<number>(2);
+  const [actionPage, setActionPage] = useState<number>(2);
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteHomeListing(actionPage);
 
   const houses = data?.pages.flatMap((page) => page.houses) ?? [];
-
 
   if (isLoading) return <div className="p-8">Loading...</div>;
   if (error)
@@ -20,21 +27,6 @@ export default function Home() {
         <h1 className="text-3xl font-semibold tracking-tight text-black dark:text-zinc-50">
           Home Listings
         </h1>
-        <div className="flex items-center gap-4">
-          <label htmlFor="perPage" className="text-sm text-zinc-700 dark:text-zinc-300">
-            Listings per page:
-          </label>
-          <select
-            id="perPage"
-            value={perPage}
-            onChange={(e) => setPerPage(Number(e.target.value))}
-            className="rounded-md border border-black/[.08] bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/[.12] dark:border-white/[.145] dark:bg-zinc-900 dark:focus:ring-white/[.2]"
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-          </select>
-        </div>
         <ul className="flex flex-col gap-4">
           {houses.map((house) => (
             <li
@@ -62,15 +54,39 @@ export default function Home() {
             </li>
           ))}
         </ul>
+        <div className="flex gap-2 items-center self-center">
+        <div className="mt-2 flex items-center justify-center gap-3">
+          <label
+            htmlFor="perPage"
+            className="dark:text-zinc-300 font-medium"
+          >
+           Load
+          </label>
+          <input
+            id="perPage"
+            type="number"
+            min={1}
+            value={perPage}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              setPerPage(Number.isNaN(value) || value < 1 ? 10 : value);
+            }}
+            className="w-24 rounded-md border border-black/[.08] bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/[.12] dark:border-white/[.145] dark:bg-zinc-900 dark:focus:ring-white/[.2]"
+          />
+        </div>
         {hasNextPage && (
           <button
-            onClick={() => fetchNextPage()}
+            onClick={() => {
+              setActionPage(houses.length + perPage);
+              fetchNextPage();
+            }}
             disabled={isFetchingNextPage}
-            className="self-center rounded-full border border-black/[.08] px-6 py-2 text-sm font-medium transition-colors hover:bg-black/[.04] disabled:opacity-50 dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
+            className="mt-2 self-center rounded-full border border-black/[.08] px-6 py-2 text-sm font-medium transition-colors hover:bg-black/[.04] disabled:opacity-50 dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
           >
-            {isFetchingNextPage ? "Loading..." : "Load more"}
+            {isFetchingNextPage ? "Loading..." : `More`}
           </button>
         )}
+        </div>
       </main>
     </div>
   );
